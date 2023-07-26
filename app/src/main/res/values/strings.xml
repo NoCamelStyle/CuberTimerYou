@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">CuberTimerYou</string>
+    
+    <!-- timer screen -->
+    <string name="timer_screen_best_time">Лучшее: %1$s</string>
+    <string name="timer_screen_average_time">Среднее: %1$s</string>
+    <string name="timer_screen_try_count">К-во: %1$s</string>
+    <string name="timer_screen_dispersion">Разброс: %1$s</string>
+
+    
 </resources>
