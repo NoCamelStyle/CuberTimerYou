@@ -7,7 +7,9 @@ import nocamelstyle.cuber.timeryou.dataset.defaultCubeNames
 interface TimerContract {
 
     sealed class Event {
-
+        object ClickTimer: Event()
+        object SelectType: Event()
+        object SelectCategory: Event()
     }
 
     sealed class Effect {

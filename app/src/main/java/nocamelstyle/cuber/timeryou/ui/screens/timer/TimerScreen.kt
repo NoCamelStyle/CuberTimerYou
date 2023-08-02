@@ -1,7 +1,9 @@
 package nocamelstyle.cuber.timeryou.ui.screens.timer
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,8 +16,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -24,10 +29,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nocamelstyle.cuber.timeryou.R
 import nocamelstyle.cuber.timeryou.extensions.toFormattedTime
+import kotlin.math.log
 
 @Composable
-fun TimerScreen() {
-    val state = TimerContract.State.getStub()
+fun TimerScreenWrapper(viewModel: TimerViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+    val state by viewModel.state.collectAsState()
+
+    TimerScreen(state, viewModel::handleEvent)
+}
+
+@Composable
+private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event) -> Unit) {
     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
         PickCubeTypeToolbar(state)
 
@@ -67,10 +79,13 @@ fun TimerScreen() {
                 .weight(1f)
                 .fillMaxWidth()
         ) {
+            Log.e("Box", "regraw")
             Text(
                 text = state.time.toFormattedTime() ?: "0.00",
                 fontSize = 36.sp,
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .clickable { event(TimerContract.Event.ClickTimer) }
             )
         }
 
@@ -155,5 +170,5 @@ fun PickCubeTypeToolbar(state: TimerContract.State) {
 @Preview(showBackground = true)
 @Composable
 fun Preview_TimerScreen() {
-    TimerScreen()
+    TimerScreenWrapper()
 }
