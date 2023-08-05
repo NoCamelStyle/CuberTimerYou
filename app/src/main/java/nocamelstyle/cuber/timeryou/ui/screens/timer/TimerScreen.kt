@@ -115,7 +115,7 @@ private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event)
                 Text(
                     text = stringResource(
                         R.string.timer_screen_try_count,
-                        state.tryCount?.toFormattedTime() ?: "--"
+                        state.tryCount.takeIf { it != 0 } ?: "--"
                     )
                 )
             }

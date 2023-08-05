@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CuberTimerYou</string>
+    <string name="app_name">Cuber Timer</string>
     
     <!-- timer screen -->
     <string name="timer_screen_best_time">Лучшее: %1$s</string>
