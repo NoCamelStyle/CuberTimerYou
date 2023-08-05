@@ -1,8 +1,10 @@
 package nocamelstyle.cuber.timeryou.ui.screens.statistics
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -12,6 +14,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,8 +37,12 @@ fun StatisticsScreen(viewModel: StatisticsVM = androidx.lifecycle.viewmodel.comp
     ) { paddings ->
         paddings
         Column {
-            TextField(value = state.searchToken, onValueChange = {})
-            LazyHorizontalGrid(rows = GridCells.Adaptive(40.dp)) {
+            TextField(
+                value = state.searchToken,
+                onValueChange = {},
+                modifier = Modifier.fillMaxWidth()
+            )
+            LazyVerticalGrid(columns = GridCells.Fixed(3)) {
                 items(state.records, key = { it.id }) { record ->
                     StatisticItemView(record)
                 }

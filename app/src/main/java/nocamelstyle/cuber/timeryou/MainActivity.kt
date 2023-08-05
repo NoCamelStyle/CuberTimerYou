@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.room.Room
 import nocamelstyle.cuber.timeryou.database.AppDatabase
 import nocamelstyle.cuber.timeryou.database.RecordDao
-import nocamelstyle.cuber.timeryou.ui.screens.timer.TimerScreenWrapper
+import nocamelstyle.cuber.timeryou.ui.screens.host.HostScreen
 import nocamelstyle.cuber.timeryou.ui.theme.CuberTimerYouTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TimerScreenWrapper()
+                    HostScreen()
                 }
             }
         }
