@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nocamelstyle.cuber.timeryou.R
 import nocamelstyle.cuber.timeryou.extensions.toFormattedTime
+import nocamelstyle.cuber.timeryou.ui.components.SelectorToolbar
 import kotlin.math.log
 
 @Composable
@@ -41,7 +42,13 @@ fun TimerScreenWrapper(viewModel: TimerViewModel = androidx.lifecycle.viewmodel.
 @Composable
 private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event) -> Unit) {
     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-        PickCubeTypeToolbar(state)
+        SelectorToolbar(
+            cubeName = state.cubeName,
+            cubeCategory = state.cubeCategory,
+            openSettings = {},
+            selectCategory = {},
+            selectCube = {}
+        )
 
         Text(
             text = state.scrumble,
@@ -57,7 +64,7 @@ private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event)
                 .padding(horizontal = 24.dp)
         ) {
             //enter your scramble
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { event(TimerContract.Event.SetScramble) }) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_edit_24),
                     contentDescription = null,
@@ -65,7 +72,7 @@ private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event)
                 )
             }
             // regenerate scramble
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { event(TimerContract.Event.RegenerateScramble) }) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_refresh_24),
                     contentDescription = null,
@@ -78,14 +85,13 @@ private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event)
             Modifier
                 .weight(1f)
                 .fillMaxWidth()
+                .clickable { event(TimerContract.Event.ClickTimer) }
         ) {
-            Log.e("Box", "regraw")
             Text(
                 text = state.time.toFormattedTime() ?: "0.00",
                 fontSize = 36.sp,
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .clickable { event(TimerContract.Event.ClickTimer) }
             )
         }
 
@@ -130,39 +136,6 @@ private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event)
                 Text(text = "Ao50: ${state.ao50?.toFormattedTime() ?: "--"}")
                 Text(text = "Ao100: ${state.ao100?.toFormattedTime() ?: "--"}")
             }
-        }
-    }
-}
-
-@Composable
-fun PickCubeTypeToolbar(state: TimerContract.State) {
-    Row(
-        modifier = Modifier
-            .padding(24.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(6.dp)),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // open drawable
-        IconButton(onClick = { /*TODO*/ }) {
-            Icon(
-                painter = painterResource(R.drawable.baseline_settings_24),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = state.cubeName)
-            Text(text = state.cubeCategory)
-        }
-
-        // select categories
-        IconButton(onClick = { /*TODO*/ }) {
-            Icon(
-                painter = painterResource(R.drawable.baseline_category_24),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
         }
     }
 }

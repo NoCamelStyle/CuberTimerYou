@@ -10,6 +10,8 @@ interface TimerContract {
         object ClickTimer: Event()
         object SelectType: Event()
         object SelectCategory: Event()
+        object RegenerateScramble: Event()
+        object SetScramble: Event()
     }
 
     sealed class Effect {

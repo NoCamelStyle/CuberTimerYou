@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import nocamelstyle.cuber.timeryou.R
+import nocamelstyle.cuber.timeryou.ui.components.SelectorToolbar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -26,22 +27,29 @@ import nocamelstyle.cuber.timeryou.R
 fun StatisticsScreen(viewModel: StatisticsVM = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val state by viewModel.state.collectAsState()
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_edit_24),
-                    contentDescription = "Add"
-                )
-            }
-        }
+//        floatingActionButton = {
+//            FloatingActionButton(onClick = { /*TODO*/ }) {
+//                Icon(
+//                    painter = painterResource(R.drawable.baseline_edit_24),
+//                    contentDescription = "Add"
+//                )
+//            }
+//        }
     ) { paddings ->
         paddings
         Column {
-            TextField(
-                value = state.searchToken,
-                onValueChange = {},
-                modifier = Modifier.fillMaxWidth()
-            )
+            SelectorToolbar(
+                cubeName = state.cubeName,
+                cubeCategory = state.cubeCategory,
+                openSettings = { /*TODO*/ },
+                selectCube = { /*TODO*/ },
+                selectCategory = {}
+                )
+//            TextField(
+//                value = state.searchToken,
+//                onValueChange = {},
+//                modifier = Modifier.fillMaxWidth()
+//            )
             LazyVerticalGrid(columns = GridCells.Fixed(3)) {
                 items(state.records, key = { it.id }) { record ->
                     StatisticItemView(record)

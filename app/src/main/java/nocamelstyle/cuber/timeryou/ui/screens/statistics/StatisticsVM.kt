@@ -7,17 +7,34 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import nocamelstyle.cuber.timeryou.MainActivity
+import nocamelstyle.cuber.timeryou.repository.LocalSettingsRepository
 
 class StatisticsVM : ViewModel() {
 
     private val database get() = MainActivity.recordDao!!
+    private val storageRepository = LocalSettingsRepository(MainActivity.contextTmp!!)
 
-    private val _state = MutableStateFlow(StatisticsState(listOf(), ""))
+
+    private val _state = MutableStateFlow(
+        StatisticsState(
+            listOf(),
+            "",
+            cubeName = storageRepository.cubeName,
+            cubeCategory = storageRepository.cubeCategory
+        )
+    )
     val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _state.emit(StatisticsState(database.getAll(), ""))
+            _state.emit(
+                StatisticsState(
+                    database.getBy(storageRepository.cubeName, storageRepository.cubeCategory),
+                    "",
+                    cubeName = storageRepository.cubeName,
+                    cubeCategory = storageRepository.cubeCategory
+                )
+            )
         }
     }
 

@@ -6,5 +6,7 @@ import nocamelstyle.cuber.timeryou.dataset.Record
 @Immutable
 data class StatisticsState(
     val records: List<Record>,
-    val searchToken: String
+    val searchToken: String,
+    val cubeName: String,
+    val cubeCategory: String
 )
