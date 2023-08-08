@@ -8,8 +8,8 @@ interface TimerContract {
 
     sealed class Event {
         object ClickTimer: Event()
-        object SelectType: Event()
-        object SelectCategory: Event()
+        class SelectType(val type: String): Event()
+        class SelectCategory(val type: String): Event()
         object RegenerateScramble: Event()
         object SetScramble: Event()
     }

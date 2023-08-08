@@ -11,7 +11,7 @@ interface RecordDao {
     @Query("SELECT * FROM record ORDER BY saveDate")
     fun getAll(): List<Record>
 
-    @Query("SELECT * FROM record WHERE cubeType LIKE :cubeType AND cubeCategory LIKE :cubeCategory  ORDER BY saveDate")
+    @Query("SELECT * FROM record WHERE cubeType = :cubeType AND cubeCategory = :cubeCategory  ORDER BY saveDate")
     fun getBy(cubeType: String, cubeCategory: String): List<Record>
 
     @Insert

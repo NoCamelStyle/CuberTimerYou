@@ -11,13 +11,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nocamelstyle.cuber.timeryou.R
+import nocamelstyle.cuber.timeryou.dataset.defaultCubeNames
 import nocamelstyle.cuber.timeryou.extensions.toFormattedTime
 import nocamelstyle.cuber.timeryou.ui.components.SelectorToolbar
 import kotlin.math.log
@@ -41,13 +47,15 @@ fun TimerScreenWrapper(viewModel: TimerViewModel = androidx.lifecycle.viewmodel.
 
 @Composable
 private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event) -> Unit) {
+    val openDialog = remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
         SelectorToolbar(
             cubeName = state.cubeName,
             cubeCategory = state.cubeCategory,
             openSettings = {},
             selectCategory = {},
-            selectCube = {}
+            selectCube = { openDialog.value = true }
         )
 
         Text(
@@ -137,6 +145,37 @@ private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event)
                 Text(text = "Ao100: ${state.ao100?.toFormattedTime() ?: "--"}")
             }
         }
+    }
+
+    if (openDialog.value) {
+
+        AlertDialog(
+            onDismissRequest = { openDialog.value = false },
+            title = {
+                Text(text = "Pick Cube Type")
+            },
+            text = {
+                Column {
+                    defaultCubeNames.forEach {
+                        TextButton(onClick = {
+                            openDialog.value = false
+                            event(TimerContract.Event.SelectType(it))
+                        }) {
+                            Text(text = it)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        openDialog.value = false
+                    }) {
+                    Text("Cancel")
+
+                }
+            }
+        )
     }
 }
 

@@ -59,8 +59,14 @@ class TimerViewModel : ViewModel() {
 
             }
 
-            TimerContract.Event.SelectCategory -> TODO()
-            TimerContract.Event.SelectType -> TODO()
+            is TimerContract.Event.SelectCategory -> {
+                storageRepository.cubeCategory = event.type
+                updateScreen()
+            }
+            is TimerContract.Event.SelectType -> {
+                storageRepository.cubeName = event.type
+                updateScreen()
+            }
             TimerContract.Event.RegenerateScramble -> TODO()
             TimerContract.Event.SetScramble -> TODO()
         }
@@ -98,7 +104,7 @@ class TimerViewModel : ViewModel() {
 
     private fun updateScreen() {
         viewModelScope.launch(Dispatchers.IO) {
-            val history = databaseRepository.getBy(storageRepository.cubeName, storageRepository.cubeName).map { it.time }
+            val history = databaseRepository.getAll().filter { it.cubeCategory == storageRepository.cubeCategory && it.cubeType == storageRepository.cubeName }.map { it.time }//getBy(storageRepository.cubeName, storageRepository.cubeName).map { it.time }
             _state.emit(
                 TimerContract.State(
                     cubeName = storageRepository.cubeName,
