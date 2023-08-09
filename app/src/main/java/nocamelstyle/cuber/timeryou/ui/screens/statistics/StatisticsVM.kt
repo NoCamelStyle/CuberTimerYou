@@ -1,5 +1,6 @@
 package nocamelstyle.cuber.timeryou.ui.screens.statistics
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,10 @@ class StatisticsVM : ViewModel() {
     val state = _state.asStateFlow()
 
     init {
+        updateScreen()
+    }
+
+    private fun updateScreen() {
         viewModelScope.launch(Dispatchers.IO) {
             _state.emit(
                 StatisticsState(
@@ -35,6 +40,29 @@ class StatisticsVM : ViewModel() {
                     cubeCategory = storageRepository.cubeCategory
                 )
             )
+        }
+    }
+
+    fun handleEvent(event: StatisticsContract.Event) {
+        when (event) {
+            is StatisticsContract.Event.SelectType -> {
+                storageRepository.cubeName = event.type
+                updateScreen()
+            }
+            is StatisticsContract.Event.SelectCategory -> {
+                storageRepository.cubeCategory = event.type
+                updateScreen()
+            }
+
+            StatisticsContract.Event.Resume -> updateScreen()
+
+            is StatisticsContract.Event.Remove -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    runCatching { database.delete(event.item) }
+                        .onFailure { Log.e("delete", "hmm", it) }
+                    updateScreen()
+                }
+            }
         }
     }
 

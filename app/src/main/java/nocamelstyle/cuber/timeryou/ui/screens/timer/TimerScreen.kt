@@ -1,93 +1,94 @@
 package nocamelstyle.cuber.timeryou.ui.screens.timer
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import nocamelstyle.cuber.timeryou.R
+import nocamelstyle.cuber.timeryou.dataset.defaultCategoryNames
 import nocamelstyle.cuber.timeryou.dataset.defaultCubeNames
 import nocamelstyle.cuber.timeryou.extensions.toFormattedTime
 import nocamelstyle.cuber.timeryou.ui.components.SelectorToolbar
-import kotlin.math.log
+import nocamelstyle.cuber.timeryou.ui.screens.statistics.LifecycleEffect
 
 @Composable
 fun TimerScreenWrapper(viewModel: TimerViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.handleEvent(TimerContract.Event.Resume)
+    }
 
     TimerScreen(state, viewModel::handleEvent)
 }
 
 @Composable
 private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event) -> Unit) {
-    val openDialog = remember { mutableStateOf(false) }
+    val openTypeDialog = remember { mutableStateOf(false) }
+    val openCategoryDialog = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
         SelectorToolbar(
             cubeName = state.cubeName,
             cubeCategory = state.cubeCategory,
             openSettings = {},
-            selectCategory = {},
-            selectCube = { openDialog.value = true }
+            selectCategory = { openCategoryDialog.value = true },
+            selectCube = { openTypeDialog.value = true }
         )
 
-        Text(
-            text = state.scrumble,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-        )
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-        ) {
-            //enter your scramble
-            IconButton(onClick = { event(TimerContract.Event.SetScramble) }) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_edit_24),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            // regenerate scramble
-            IconButton(onClick = { event(TimerContract.Event.RegenerateScramble) }) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_refresh_24),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
+//        Text(
+//            text = state.scrumble,
+//            textAlign = TextAlign.Center,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(horizontal = 24.dp)
+//        )
+//        Row(
+//            horizontalArrangement = Arrangement.End,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(horizontal = 24.dp)
+//        ) {
+//            //enter your scramble
+//            IconButton(onClick = { event(TimerContract.Event.SetScramble) }) {
+//                Icon(
+//                    painter = painterResource(R.drawable.baseline_edit_24),
+//                    contentDescription = null,
+//                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+//                )
+//            }
+//            // regenerate scramble
+//            IconButton(onClick = { event(TimerContract.Event.RegenerateScramble) }) {
+//                Icon(
+//                    painter = painterResource(R.drawable.baseline_refresh_24),
+//                    contentDescription = null,
+//                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+//                )
+//            }
+//        }
 
         Box(
             Modifier
@@ -147,19 +148,40 @@ private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event)
         }
     }
 
-    if (openDialog.value) {
+    ListAlert(
+        items = defaultCubeNames.toList(),
+        isShow = openTypeDialog.value,
+        select = { event(TimerContract.Event.SelectType(it)) },
+        close = { openTypeDialog.value = false }
+    )
 
+    ListAlert(
+        items = defaultCategoryNames.toList(),
+        isShow = openCategoryDialog.value,
+        select = { event(TimerContract.Event.SelectCategory(it)) },
+        close = { openCategoryDialog.value = false }
+    )
+}
+
+@Composable
+fun ListAlert(
+    items: List<String>,
+    isShow: Boolean,
+    select: (String) -> Unit,
+    close: () -> Unit
+) {
+    if (isShow) {
         AlertDialog(
-            onDismissRequest = { openDialog.value = false },
+            onDismissRequest = close,
             title = {
                 Text(text = "Pick Cube Type")
             },
             text = {
                 Column {
-                    defaultCubeNames.forEach {
+                    items.forEach {
                         TextButton(onClick = {
-                            openDialog.value = false
-                            event(TimerContract.Event.SelectType(it))
+                            close()
+                            select(it)
                         }) {
                             Text(text = it)
                         }
@@ -167,12 +189,8 @@ private fun TimerScreen(state: TimerContract.State, event: (TimerContract.Event)
                 }
             },
             confirmButton = {
-                Button(
-                    onClick = {
-                        openDialog.value = false
-                    }) {
+                Button(onClick = close) {
                     Text("Cancel")
-
                 }
             }
         )

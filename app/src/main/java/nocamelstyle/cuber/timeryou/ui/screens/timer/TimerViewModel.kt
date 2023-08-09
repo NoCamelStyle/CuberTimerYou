@@ -69,6 +69,7 @@ class TimerViewModel : ViewModel() {
             }
             TimerContract.Event.RegenerateScramble -> TODO()
             TimerContract.Event.SetScramble -> TODO()
+            TimerContract.Event.Resume -> updateScreen()
         }
     }
 
